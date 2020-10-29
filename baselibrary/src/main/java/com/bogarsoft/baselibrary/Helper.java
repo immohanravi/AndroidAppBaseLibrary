@@ -133,11 +133,11 @@ public class Helper {
     }
 
     public static String getRequestLink(String key){
-        return getrequest.get(key);
+        return link+getrequest.get(key);
     }
 
     public static String postRequestLink(String key){
-        return postrequest.get(key);
+        return link+postrequest.get(key);
     }
 
     public static void setPostrequest(String key,String link){
