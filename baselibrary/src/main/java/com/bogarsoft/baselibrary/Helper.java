@@ -19,15 +19,21 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public class Helper {
 
+
+    static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static SecureRandom rnd = new SecureRandom();
     static HashMap<String,String> query = new HashMap<>();
     static HashMap<String,String> body = new HashMap<>();
     private static final String TAG = "Helper";
@@ -43,7 +49,8 @@ public class Helper {
     public static String LOGOUT = link+"/logout";
     public static String TOKEN = link+"/token";
 
-
+    private static final String emailregex = "^(.+)@(.+)$";
+    private static Pattern pattern = Pattern.compile(emailregex);
 
 
 /*
@@ -133,6 +140,27 @@ public class Helper {
     }
     public static StorageUtility getStorgeUtil(){
         return sp;
+    }
+
+
+    public static String randomString( int len ){
+        StringBuilder sb = new StringBuilder( len );
+        for( int i = 0; i < len; i++ )
+            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
+        return "receipt_"+sb.toString();
+    }
+
+    public static boolean isEmailValid(TextInputEditText email){
+        return pattern.matcher(getString(email)).matches();
+    }
+
+    public static String getText(View inputEditText){
+        if(inputEditText instanceof TextInputEditText){
+            return ((TextInputEditText)inputEditText).getText().toString().trim();
+        }else {
+            return ((MaterialAutoCompleteTextView)inputEditText).getText().toString().trim();
+        }
+
     }
 
 
