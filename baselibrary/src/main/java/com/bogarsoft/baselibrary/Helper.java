@@ -21,13 +21,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.regex.Pattern;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class Helper {
 
@@ -65,6 +72,7 @@ public class Helper {
         //sqLiteSignInHandler = new SQLiteSignInHandler(context);
         //setUser(context);
     }
+
 
 
     public static void sendToast(String message, Context context){
@@ -162,6 +170,73 @@ public class Helper {
         }
 
     }
+    public static String getDate(long milliSeconds, String dateFormat)
+    {
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return formatter.format(calendar.getTime());
+    }
+
+
+    public static long getTodaysDateInMilli(){
+        String inputRaw = Helper.getDate(System.currentTimeMillis(),"yyyy/MM/dd") +" 00:00:00";
+        Log.d(TAG, "setHolidaySwitch: "+inputRaw);
+        String input = inputRaw.replace( "/", "-" ).replace( " ", "T" );
+        DateTimeZone zone = DateTimeZone.getDefault();
+        DateTime dateTime = new DateTime( input, zone );
+        long millisecondsSinceUnixEpoch = dateTime.getMillis();
+        return millisecondsSinceUnixEpoch;
+
+    }
+
+    public static long getDateInmilli(long date){
+        String inputRaw = Helper.getDate(date,"yyyy/MM/dd") +" 00:00:00";
+        String input = inputRaw.replace( "/", "-" ).replace( " ", "T" );
+        DateTimeZone zone = DateTimeZone.getDefault();
+        DateTime dateTime = new DateTime( input, zone );
+        long millisecondsSinceUnixEpoch = dateTime.getMillis();
+        return millisecondsSinceUnixEpoch;
+    }
+
+
+    public static long getDateInmilliUsingString(int year,int month,int dateofmonth){
+        String inputRaw = year+"/"+(month)+"/"+dateofmonth+" 00:00:00";
+        String input = inputRaw.replace( "/", "-" ).replace( " ", "T" );
+        DateTimeZone zone = DateTimeZone.getDefault();
+        DateTime dateTime = new DateTime( input, zone );
+        long millisecondsSinceUnixEpoch = dateTime.getMillis();
+        return millisecondsSinceUnixEpoch;
+    }
+
+
+
+    public static String withCaps(String source) {
+        source = source.toLowerCase();
+        StringBuffer res = new StringBuffer();
+
+        String[] strArr = source.split(" ");
+        Log.e("string array", source);
+
+        for (String str : strArr) {
+            char[] stringArray = str.trim().toCharArray();
+
+            if (stringArray.length > 0) {
+                if((int)stringArray[0] != 32) {
+                    stringArray[0] = Character.toUpperCase(stringArray[0]);
+                    str = new String(stringArray);
+                }
+            }
+
+
+
+            res.append(str).append(" ");
+        }
+
+        return res.toString().trim();
+    }
 
 }
