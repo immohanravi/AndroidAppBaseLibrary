@@ -21,6 +21,7 @@ import androidx.core.content.pm.PackageInfoCompat;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.bogarsoft.baselibrary.Helper;
 import com.irozon.alertview.AlertActionStyle;
 import com.irozon.alertview.AlertStyle;
@@ -465,6 +466,121 @@ public class ApiCalls {
         }
     }
 
+    public void UploadAfileMethod(String link, File file, HashMap<String, String> query, Activity activity, boolean tryAgainhandler, OnResult onResult) {
+        Dialog dialog = new Dialog(activity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(
+                new ColorDrawable(0));
+        dialog.setContentView(R.layout.progress_dialog_bar);
+        ProgressBar progressBar = dialog.findViewById(R.id.progressBar);
+        ProgressBar progressBar2 = dialog.findViewById(R.id.progressBar2);
+        progressBar2.setVisibility(View.INVISIBLE);
+        progressBar.getIndeterminateDrawable().setColorFilter(activity.getResources().getColor(R.color.red_active), PorterDuff.Mode.MULTIPLY);
+        progressBar.setIndeterminate(false);
+        progressBar.setMax(100);
+        dialog.setCancelable(false);
+        dialog.show();
+        try {
+            AndroidNetworking.upload(link)
+                    .addHeaders("authorization", "Basic " + AESEncyption.decrypt(Helper.getStorgeUtil().gettoken1()))
+                    .addMultipartFile("file", file)
+                    .addQueryParameter(query)
+                    .build()
+                    .setUploadProgressListener(new UploadProgressListener() {
+                        @Override
+                        public void onProgress(long bytesUploaded, long totalBytes) {
+                            long percentage = ((bytesUploaded*100)/totalBytes);
+                            progressBar.setProgress((int) percentage);
+
+                            Log.d(TAG, "onProgress: "+percentage);
+                            if (Long.compare(bytesUploaded, totalBytes) == 0) {
+                                progressBar.setVisibility(View.INVISIBLE);
+                                progressBar2.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }).getAsJSONObject(new JSONObjectRequestListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    dialog.dismiss();
+                    Log.d(TAG, "onResponse: " + response);
+                    onResult.responseReceived();
+                    try {
+                        if (!response.getBoolean("error")) {
+                            onResult.onSuccess(response);
+                        } else {
+                            try {
+                                if (response.getString("message").equals("TokenExpiredError")) {
+                                    RefreshToken refreshToken = new RefreshToken();
+                                    refreshToken.refreshToken();
+                                    refreshToken.setOnTokenCreated(new RefreshToken.OnTokenCreated() {
+                                        @Override
+                                        public void onTokenCreatedSuccessfully() {
+                                            onResult.onTryAgain();
+                                        }
+
+                                        @Override
+                                        public void onTokenCreationFailed() {
+                                            Helper.sendToast("Token Expired and creation of new token failed please login again", activity.getApplicationContext());
+                                            Helper.getStorgeUtil().clear();
+                                            if(onLogin!=null){
+                                                onLogin.Loging();
+                                                activity.finish();
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    onResult.onFailed(response);
+                                }
+                            } catch (JSONException e) {
+                                onResult.onFailed(response);
+                                e.printStackTrace();
+                            }
+                        }
+                    } catch (JSONException e) {
+                        onResult.onFailed(response);
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onError(ANError anError) {
+                    if (anError.getErrorCode() != 0) {
+                        // received error from server
+                        // error.getErrorCode() - the error code from server
+                        // error.getErrorBody() - the error body from server
+                        // error.getErrorDetail() - just an error detail
+                        Log.d(TAG, "onError errorCode : " + anError.getErrorCode());
+                        Log.d(TAG, "onError errorBody : " + anError.getErrorBody());
+                        Log.d(TAG, "onError errorDetail : " + anError.getErrorDetail());
+                        // get parsed error object (If ApiError is your class)
+
+                    } else {
+                        // error.getErrorDetail() : connectionError, parseError, requestCancelledError
+                        Log.d(TAG, "onError errorDetail : " + anError.getErrorDetail());
+                    }
+
+                    onResult.responseReceived();
+                    if (tryAgainhandler) {
+                        tryAgain(activity, new OnAlertCallBack() {
+                            @Override
+                            public void tryAgain() {
+                                onResult.onTryAgain();
+                            }
+
+                            @Override
+                            public void cancel() {
+
+                            }
+                        });
+                    }
+                    dialog.dismiss();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     public void NetWorkAlertLogin(final Activity activity, final OnAlertCallBack onAlertCallBack) {
