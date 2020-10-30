@@ -49,7 +49,7 @@ public class Helper {
 
     private static HashMap<String,String> getrequest = new HashMap<>();
     private static HashMap<String,String> postrequest = new HashMap<>();
-
+    private static HashMap<String,String> links = new HashMap<>();
     private static StorageUtility sp;
     private static String link;
     public static String LOGIN = link+"/login";
@@ -65,10 +65,10 @@ public class Helper {
 */
 
     //public static SQLiteSignInHandler sqLiteSignInHandler;
-    public static void init(Context context, String weblink){
+    public static void init(Context context, String domainLink){
 
         sp = new StorageUtility(context);
-        link = weblink;
+        link = domainLink;
         //sqLiteSignInHandler = new SQLiteSignInHandler(context);
         //setUser(context);
     }
@@ -147,6 +147,18 @@ public class Helper {
     public static void setGetrequest(String key,String link){
         getrequest.put(key,link);
     }
+    public static void setLinks(String key,String link){
+        links.put(key,link);
+    }
+
+    public static String getLink(String key) {
+        return links.get(key);
+    }
+
+    public static String getDomainLink(){
+        return link;
+    }
+
     public static StorageUtility getStorgeUtil(){
         return sp;
     }
