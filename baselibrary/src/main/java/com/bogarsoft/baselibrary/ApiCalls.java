@@ -187,7 +187,7 @@ public class ApiCalls {
         final Dialog dialog = Helper.showProgress(activity);
         try {
             AndroidNetworking.get(link)
-                    .addHeaders("x-access-token", AESEncyption.decrypt(Helper.getStorgeUtil().gettoken1()))
+                    .addHeaders("authorization", "Basic " + AESEncyption.decrypt(Helper.getStorgeUtil().gettoken1()))
                     .addQueryParameter(query)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
@@ -286,7 +286,7 @@ public class ApiCalls {
     public void getMethod(String link, HashMap<String, String> query, final Activity activity, final boolean tryAgainhandler, final OnResult onResult, boolean dialogshow) {
         try {
             AndroidNetworking.get(link)
-                    .addHeaders("x-access-token", AESEncyption.decrypt(Helper.getStorgeUtil().gettoken1()))
+                    .addHeaders("authorization", "Basic " + AESEncyption.decrypt(Helper.getStorgeUtil().gettoken1()))
                     .addQueryParameter(query)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
@@ -379,7 +379,7 @@ public class ApiCalls {
         Log.d(TAG, "postMethod: " + body);
         try {
             AndroidNetworking.post(link)
-                    .addHeaders("x-access-token", AESEncyption.decrypt(Helper.getStorgeUtil().gettoken1()))
+                    .addHeaders("authorization", "Basic " + AESEncyption.decrypt(Helper.getStorgeUtil().gettoken1()))
                     .addBodyParameter(body)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
