@@ -152,7 +152,7 @@ public class Helper {
     }
 
     public static String getLink(String key) {
-        return links.get(key);
+        return link+links.get(key);
     }
 
     public static String getDomainLink(){
