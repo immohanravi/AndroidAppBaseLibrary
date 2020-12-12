@@ -54,7 +54,7 @@ public class Helper {
     private static String link;
     public static String LOGIN = link+"/login";
     public static String LOGOUT = link+"/logout";
-    public static String TOKEN = link+"/token";
+    public static String TOKEN;
 
     private static final String emailregex = "^(.+)@(.+)$";
     private static Pattern pattern = Pattern.compile(emailregex);
@@ -67,6 +67,7 @@ public class Helper {
 
         sp = new StorageUtility(context);
         link = domainLink;
+        TOKEN = link+"/token";
         //sqLiteSignInHandler = new SQLiteSignInHandler(context);
         //setUser(context);
     }
@@ -137,6 +138,10 @@ public class Helper {
 
     public static String postRequestLink(String key){
         return link+postrequest.get(key);
+    }
+
+    public static String getTOKEN(){
+        return TOKEN;
     }
 
     public static void setPostrequest(String key,String link){

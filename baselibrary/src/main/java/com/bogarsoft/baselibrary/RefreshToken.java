@@ -29,8 +29,8 @@ public class RefreshToken {
 
     public void refreshToken(){
         try {
-            Log.d(TAG, "refreshToken: "+Helper.TOKEN);
-            AndroidNetworking.post(Helper.TOKEN)
+            Log.d(TAG, "refreshToken: "+Helper.getTOKEN());
+            AndroidNetworking.post(Helper.getTOKEN())
                     .addBodyParameter("token", AESEncyption.decrypt(Helper.getStorgeUtil().gettoken2()))
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
