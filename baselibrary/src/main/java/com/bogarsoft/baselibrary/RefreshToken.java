@@ -29,6 +29,7 @@ public class RefreshToken {
 
     public void refreshToken(){
         try {
+            Log.d(TAG, "refreshToken: "+Helper.TOKEN);
             AndroidNetworking.post(Helper.TOKEN)
                     .addBodyParameter("token", AESEncyption.decrypt(Helper.getStorgeUtil().gettoken2()))
                     .build()
