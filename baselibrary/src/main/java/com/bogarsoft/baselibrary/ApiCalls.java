@@ -195,7 +195,7 @@ public class ApiCalls {
                         @Override
                         public void onResponse(JSONObject response) {
                             dialog.dismiss();
-                            // Log.d(TAG, "onResponse: " + response);
+                            Log.d(TAG, "onResponse: " + response);
                             onResult.responseReceived();
 
                             try {
@@ -293,7 +293,7 @@ public class ApiCalls {
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            // Log.d(TAG, "onResponse: " + response);
+                            Log.d(TAG, "onResponse: " + response);
                             onResult.responseReceived();
 
                             try {

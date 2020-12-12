@@ -58,8 +58,6 @@ public class Helper {
 
     private static final String emailregex = "^(.+)@(.+)$";
     private static Pattern pattern = Pattern.compile(emailregex);
-
-
 /*
 
 */
