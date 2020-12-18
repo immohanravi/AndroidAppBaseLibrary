@@ -17,10 +17,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -29,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.SecureRandom;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -67,10 +72,11 @@ public class Helper {
 
         sp = new StorageUtility(context);
         link = domainLink;
-        TOKEN = link+"/token";
+        TOKEN = link+"/resettoken";
         //sqLiteSignInHandler = new SQLiteSignInHandler(context);
         //setUser(context);
     }
+
 
 
 
@@ -253,6 +259,40 @@ public class Helper {
         }
 
         return res.toString().trim();
+    }
+
+
+    public static void subscribeToTopic(String topic, Context context){
+        StorageUtility storageUtil = new StorageUtility(context);
+        if(!storageUtil.issubscribeToTopic(topic)) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                    if (!task.isSuccessful()) {
+                                        storageUtil.subscribeToTopic(topic, false);
+                                        Log.d(TAG, "onComplete: failed to subscribe to topic = " + topic);
+                                    } else {
+                                        storageUtil.subscribeToTopic(topic, true);
+                                        Log.d(TAG, "onComplete: successfully subscribed to topic = " + topic);
+                                    }
+
+                                }
+                            });
+                }
+            });
+            thread.start();
+        }
+    }
+
+
+    public static String getTwoDecimal(double input){
+        DecimalFormat dtime = new DecimalFormat("0.00");
+        return dtime.format(input);
     }
 
 }

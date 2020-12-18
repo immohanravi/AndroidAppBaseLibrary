@@ -15,11 +15,16 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Helper.init(getApplicationContext(),link);
+
+
+
+            Helper.init(getApplicationContext(),link);
+
         ApiCalls.getInstance().setOnLogin(new ApiCalls.OnLogin() {
             @Override
             public void Loging() {
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });

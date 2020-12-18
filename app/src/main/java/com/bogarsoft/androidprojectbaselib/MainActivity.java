@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
+import com.bogarsoft.baselibrary.ApiCalls;
 import com.bogarsoft.baselibrary.Helper;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,5 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate: "+ Helper.getStorgeUtil().isLoggedIn());
         Helper.sendToast("test toast",getApplicationContext());
+
+
     }
 }

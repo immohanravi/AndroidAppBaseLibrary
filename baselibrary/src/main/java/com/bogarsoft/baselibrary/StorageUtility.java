@@ -166,6 +166,19 @@ public class StorageUtility {
         return preferences.getBoolean("joined",false);
     }
 
+
+    public void subscribeToTopic(String topic, boolean result) {
+        preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(topic, result);
+        editor.apply();
+    }
+
+    public boolean issubscribeToTopic(String topic){
+        preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+        return preferences.getBoolean(topic, false);//return -1 if no data found
+    }
+
     public void clear(){
         preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
