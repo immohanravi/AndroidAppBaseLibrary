@@ -60,7 +60,6 @@ public class Helper {
     public static String LOGIN = link+"/login";
     public static String LOGOUT = link+"/logout";
     public static String TOKEN;
-
     private static final String emailregex = "^(.+)@(.+)$";
     private static Pattern pattern = Pattern.compile(emailregex);
 /*
@@ -82,10 +81,6 @@ public class Helper {
 
     public static void sendToast(String message, Context context){
         Toast toast=Toast.makeText(context,message,Toast.LENGTH_LONG);
-        View view =toast.getView();
-        view.setBackgroundResource(R.drawable.toast_round);
-        TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
-        toastMessage.setTextColor(Color.WHITE);
         toast.show();
     }
 
