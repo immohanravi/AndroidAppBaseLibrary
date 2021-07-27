@@ -381,7 +381,7 @@ public class ApiCalls {
             dialog = Helper.showProgress(activity);
         }
         try {
-            Dialog finalDialog = dialog;
+            Dialog finalDialog1 = dialog;
             AndroidNetworking.get(link)
                     .addQueryParameter(query)
                     .build()
@@ -391,6 +391,9 @@ public class ApiCalls {
                             Log.d(TAG, "onResponse: " + response);
 
                             onResult.responseReceived();
+                            if (dialogshow){
+                                finalDialog1.dismiss();
+                            }
 
                             try {
                                 if (!response.getBoolean("error")) {
@@ -463,9 +466,7 @@ public class ApiCalls {
                                 });
                             }
                             if (dialogshow){
-                                if (finalDialog !=null){
-                                    finalDialog.dismiss();
-                                }
+                                finalDialog1.dismiss();
                             }
 
                         }
