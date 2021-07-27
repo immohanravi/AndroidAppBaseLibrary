@@ -375,6 +375,107 @@ public class ApiCalls {
         }
     }
 
+    public void getMethodWithoutAuth(String link, HashMap<String, String> query, final Activity activity, final boolean tryAgainhandler, final OnResult onResult, boolean dialogshow) {
+        Dialog dialog = null;
+        if (dialogshow){
+            dialog = Helper.showProgress(activity);
+        }
+        try {
+            Dialog finalDialog = dialog;
+            AndroidNetworking.get(link)
+                    .addQueryParameter(query)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.d(TAG, "onResponse: " + response);
+
+                            onResult.responseReceived();
+
+                            try {
+                                if (!response.getBoolean("error")) {
+                                    onResult.onSuccess(response);
+                                } else {
+                                    try {
+                                        if (response.getString("message").equals("TokenExpiredError")) {
+                                            RefreshToken refreshToken = new RefreshToken();
+                                            refreshToken.refreshToken();
+                                            refreshToken.setOnTokenCreated(new RefreshToken.OnTokenCreated() {
+                                                @Override
+                                                public void onTokenCreatedSuccessfully() {
+                                                    onResult.onTryAgain();
+                                                }
+
+                                                @Override
+                                                public void onTokenCreationFailed() {
+                                                    Helper.sendToast("Token Expired and creation of new token failed please login again", activity.getApplicationContext());
+                                                    Helper.getStorgeUtil().clear();
+                                                    if(onLogin!=null){
+                                                        onLogin.Loging();
+                                                        activity.finish();
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            onResult.onFailed(response);
+                                        }
+                                    } catch (JSONException e) {
+                                        onResult.onFailed(response);
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                onResult.onFailed(response);
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(ANError anError) {
+                            if (anError.getErrorCode() != 0) {
+                                // received error from server
+                                // error.getErrorCode() - the error code from server
+                                // error.getErrorBody() - the error body from server
+                                // error.getErrorDetail() - just an error detail
+                                Log.d(TAG, "onError errorCode : " + anError.getErrorCode());
+                                Log.d(TAG, "onError errorBody : " + anError.getErrorBody());
+                                Log.d(TAG, "onError errorDetail : " + anError.getErrorDetail());
+                                // get parsed error object (If ApiError is your class)
+
+                            } else {
+                                // error.getErrorDetail() : connectionError, parseError, requestCancelledError
+                                Log.d(TAG, "onError errorDetail : " + anError.getErrorDetail());
+                            }
+
+                            onResult.responseReceived();
+                            if (tryAgainhandler) {
+                                tryAgain(activity, new OnAlertCallBack() {
+                                    @Override
+                                    public void tryAgain() {
+                                        onResult.onTryAgain();
+                                    }
+
+                                    @Override
+                                    public void cancel() {
+
+                                    }
+                                });
+                            }
+                            if (dialogshow){
+                                if (finalDialog !=null){
+                                    finalDialog.dismiss();
+                                }
+                            }
+
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void postMethod(String link, HashMap<String, String> body, final Activity activity, final boolean tryAgainhandler, final OnResult onResult) {
         final Dialog dialog = Helper.showProgress(activity);
         Log.d(TAG, "postMethod: " + body);
