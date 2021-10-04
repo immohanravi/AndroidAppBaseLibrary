@@ -8,6 +8,10 @@ import android.view.View;
 
 import com.bogarsoft.baselibrary.ApiCalls;
 import com.bogarsoft.baselibrary.Helper;
+import com.bogarsoft.baselibrary.Query;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +23,34 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: "+ Helper.getStorgeUtil().isLoggedIn());
         Helper.sendToast("test toast",getApplicationContext());
 
+        ApiCalls.getInstance().getMethodWithoutAuthWithArray(
+                "https://jsonplaceholder.typicode.com/todos",
+                new Query(),
+                this,
+                false,
+                new ApiCalls.OnResultArray() {
+                    @Override
+                    public void onSuccess(JSONArray response) {
+                        Log.d(TAG, "onSuccess: "+response);
+                    }
+
+                    @Override
+                    public void onFailed(JSONObject response) {
+                        Log.d(TAG, "onFailed: "+response);
+                    }
+
+                    @Override
+                    public void responseReceived() {
+
+                    }
+
+                    @Override
+                    public void onTryAgain() {
+
+                    }
+                }
+
+        ,true);
 
     }
 }

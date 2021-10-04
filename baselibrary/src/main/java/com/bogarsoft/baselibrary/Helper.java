@@ -20,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.agrawalsuneet.dotsloader.loaders.TrailingCircularDotsLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -67,6 +68,10 @@ public class Helper {
 */
 
     //public static SQLiteSignInHandler sqLiteSignInHandler;
+
+
+
+
     public static void init(Context context, String domainLink){
 
         sp = new StorageUtility(context);
@@ -90,7 +95,10 @@ public class Helper {
         dialog.getWindow().setBackgroundDrawable(
                 new ColorDrawable(0));
         dialog.setContentView(R.layout.progress_dialog);
-        ProgressBar progressBar = dialog.findViewById(R.id.progressBar);
+        TrailingCircularDotsLoader trailingCircularDotsLoader = dialog.findViewById(R.id.progressBar);
+        trailingCircularDotsLoader.setCircleColor(activity.getResources().getColor(R.color.md_white_1000));
+
+        //ProgressBar progressBar = dialog.findViewById(R.id.progressBar);
          dialog.setCancelable(false);
         dialog.show();
         return dialog;

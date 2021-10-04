@@ -20,6 +20,7 @@ import androidx.core.content.pm.PackageInfoCompat;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.bogarsoft.baselibrary.Helper;
@@ -30,6 +31,7 @@ import com.irozon.alertview.interfaces.AlertActionListener;
 import com.irozon.alertview.objects.AlertAction;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,6 +56,16 @@ public class ApiCalls {
 
     public interface OnResult {
         void onSuccess(JSONObject response);
+
+        void onFailed(JSONObject response);
+
+        void responseReceived();
+
+        void onTryAgain();
+    }
+
+    public interface OnResultArray {
+        void onSuccess(JSONArray response);
 
         void onFailed(JSONObject response);
 
@@ -470,6 +482,69 @@ public class ApiCalls {
                             }
 
                         }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getMethodWithoutAuthWithArray(String link, HashMap<String, String> query, final Activity activity, final boolean tryAgainhandler, final OnResultArray onResult, boolean dialogshow) {
+        Dialog dialog = null;
+        if (dialogshow){
+            dialog = Helper.showProgress(activity);
+        }
+        try {
+            Dialog finalDialog1 = dialog;
+            AndroidNetworking.get(link)
+                    .addQueryParameter(query)
+                    .build()
+                    .getAsJSONArray(new JSONArrayRequestListener() {
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            onResult.responseReceived();
+                            if (dialogshow){
+                                //finalDialog1.dismiss();
+                            }
+                            onResult.onSuccess(response);
+
+                        }
+
+                        @Override
+                        public void onError(ANError anError) {
+                            if (anError.getErrorCode() != 0) {
+                                // received error from server
+                                // error.getErrorCode() - the error code from server
+                                // error.getErrorBody() - the error body from server
+                                // error.getErrorDetail() - just an error detail
+                                Log.d(TAG, "onError errorCode : " + anError.getErrorCode());
+                                Log.d(TAG, "onError errorBody : " + anError.getErrorBody());
+                                Log.d(TAG, "onError errorDetail : " + anError.getErrorDetail());
+                                // get parsed error object (If ApiError is your class)
+
+                            } else {
+                                // error.getErrorDetail() : connectionError, parseError, requestCancelledError
+                                Log.d(TAG, "onError errorDetail : " + anError.getErrorDetail());
+                            }
+
+                            onResult.responseReceived();
+                            if (tryAgainhandler) {
+                                tryAgain(activity, new OnAlertCallBack() {
+                                    @Override
+                                    public void tryAgain() {
+                                        onResult.onTryAgain();
+                                    }
+
+                                    @Override
+                                    public void cancel() {
+
+                                    }
+                                });
+                            }
+                            if (dialogshow){
+                                //finalDialog1.dismiss();
+                            }
+                        }
+
                     });
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,6 +3,8 @@ package com.bogarsoft.androidprojectbaselib;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.graphics.Color;
+import android.util.Log;
 
 import com.bogarsoft.androidprojectbaselib.ui.login.LoginActivity;
 import com.bogarsoft.baselibrary.AESEncyption;
@@ -12,6 +14,7 @@ import com.bogarsoft.baselibrary.Helper;
 public class App extends Application {
 
     String link = "http://192.168.1.104:3000";
+    private static final String TAG = "App";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -19,7 +22,7 @@ public class App extends Application {
 
 
             Helper.init(getApplicationContext(),link);
-
+            //Helper.setLoadingColor(getResources().getColor(R.color.blue_active));
         ApiCalls.getInstance().setOnLogin(new ApiCalls.OnLogin() {
             @Override
             public void Loging() {
